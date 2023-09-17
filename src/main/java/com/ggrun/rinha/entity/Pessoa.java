@@ -1,7 +1,9 @@
 package com.ggrun.rinha.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -19,6 +21,7 @@ public class Pessoa {
     UUID id;
     @Column(name = "apelido", length = 32, unique = true)
     String apelido;
+    @Pattern(regexp = "^[A-Za-zÀ-ÿ\\s]+$", message = "O nome deve conter apenas letras.")
     @Column(name = "nome", length = 100)
     String nome;
     @Column(name = "nascimento")
@@ -95,7 +98,7 @@ public class Pessoa {
         return nascimento != null && isValidDate(nascimento);
     }
     private boolean isValidStack(){
-        return stack != null && !stack.isEmpty() && stack.stream().allMatch(el -> el != null && el.length() < 32);
+        return stack == null || (!stack.isEmpty() && stack.stream().allMatch(el -> el != null && el.length() < 32));
     }
 
     private boolean isValidDate(String date) {

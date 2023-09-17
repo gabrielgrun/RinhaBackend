@@ -2,6 +2,7 @@ package com.ggrun.rinha.api;
 
 import com.ggrun.rinha.entity.Pessoa;
 import com.ggrun.rinha.service.PessoaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,11 +19,11 @@ public class PessoaController {
     PessoaService pessoaService;
 
     @PostMapping
-    public ResponseEntity<HttpStatus> create(@RequestBody Pessoa pessoa){
+    public ResponseEntity<HttpStatus> create(@Valid @RequestBody Pessoa pessoa){
         if(!pessoa.isValid() || pessoaService.findByApelido(pessoa.getApelido()) != null){
             return ResponseEntity.unprocessableEntity().build();
         }
-        
+
         UUID id = pessoaService.create(pessoa);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/pessoas/" + id);
