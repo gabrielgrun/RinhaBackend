@@ -21,9 +21,9 @@ public class PessoaServiceImpl implements PessoaService {
     }
 
     @Override
-    public Pessoa getById(String id){
-        Optional<Pessoa> pessoaEntity = repository.findById(id);
-        return pessoaEntity.orElseGet(() -> null);
+    public Pessoa getById(String id) throws Exception {
+        Optional<Pessoa> pessoaEntity = repository.findById(UUID.fromString(id));
+        return pessoaEntity.orElseThrow(() -> new Exception("Pessoa with id " + id + " not found"));
     }
 
     @Override

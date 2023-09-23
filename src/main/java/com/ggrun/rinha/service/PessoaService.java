@@ -8,7 +8,7 @@ public interface PessoaService {
 
     public UUID create(Pessoa pessoa);
 
-    public Pessoa getById(String id);
+    public Pessoa getById(String id) throws Exception;
 
     public Pessoa findByApelido(String apelido);
 

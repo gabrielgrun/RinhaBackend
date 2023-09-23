@@ -31,7 +31,16 @@ public class PessoaController {
     }
 
     @GetMapping("/{id}")
-    public void get(@PathVariable("id") String id){}
+    public ResponseEntity<Pessoa> get(@PathVariable("id") String id){
+        Pessoa pessoa;
+        try {
+            pessoa = pessoaService.getById(id);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(pessoa);
+    }
 
     @GetMapping("/")
     public void search(@RequestParam("t") String term){}

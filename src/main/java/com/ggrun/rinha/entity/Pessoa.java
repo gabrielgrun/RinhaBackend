@@ -1,9 +1,9 @@
 package com.ggrun.rinha.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -85,6 +85,7 @@ public class Pessoa {
         return Objects.hash(id);
     }
 
+    @JsonIgnore
     public boolean isValid(){
         return isValidApelido() && isValidNome() && isValidNascimento() && isValidStack();
     }
