@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -19,8 +21,8 @@ public class PessoaController {
     PessoaService pessoaService;
 
     @PostMapping
-    public ResponseEntity<HttpStatus> create(@Valid @RequestBody Pessoa pessoa){
-        if(!pessoa.isValid() || pessoaService.findByApelido(pessoa.getApelido()) != null){
+    public ResponseEntity<HttpStatus> create(@Valid @RequestBody Pessoa pessoa) {
+        if (!pessoa.isValid() || pessoaService.findByApelido(pessoa.getApelido()) != null) {
             return ResponseEntity.unprocessableEntity().build();
         }
 
@@ -31,7 +33,7 @@ public class PessoaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Pessoa> get(@PathVariable("id") String id){
+    public ResponseEntity<Pessoa> get(@PathVariable("id") String id) {
         Pessoa pessoa;
         try {
             pessoa = pessoaService.getById(id);
@@ -39,14 +41,32 @@ public class PessoaController {
             return ResponseEntity.notFound().build();
         }
 
+        if(pessoa == null){
+            return ResponseEntity.notFound().build();
+        }
+
         return ResponseEntity.ok(pessoa);
     }
 
-    @GetMapping("/")
-    public void search(@RequestParam("t") String term){}
+    @GetMapping("")
+    public ResponseEntity<List<Pessoa>> search(@RequestParam(name = "t", required = true) String termo) {
+        if(termo == null || termo.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<Pessoa> pessoas;
+
+        try {
+            pessoas = pessoaService.findByTermo(termo);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(pessoas);
+    }
 
     @GetMapping("/contagem-pessoas")
-    public Integer totalCount(){
+    public Integer totalCount() {
         return pessoaService.count();
     }
 }

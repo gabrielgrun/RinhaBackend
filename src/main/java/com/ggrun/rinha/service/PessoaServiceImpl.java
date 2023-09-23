@@ -5,6 +5,7 @@ import com.ggrun.rinha.repository.PessoaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,6 +30,11 @@ public class PessoaServiceImpl implements PessoaService {
     @Override
     public Pessoa findByApelido(String apelido){
         return repository.findByApelido(apelido);
+    }
+
+    @Override
+    public List<Pessoa> findByTermo(String termo){
+        return repository.findByTermo(termo);
     }
 
     @Override
