@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -19,6 +21,16 @@ public class PessoaController {
 
     @Autowired
     PessoaService pessoaService;
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    protected ResponseEntity<Object> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        return ResponseEntity.unprocessableEntity().build();
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    protected ResponseEntity<Object> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
+        return ResponseEntity.badRequest().build();
+    }
 
     @PostMapping
     public ResponseEntity<HttpStatus> create(@Valid @RequestBody Pessoa pessoa) {
@@ -49,7 +61,7 @@ public class PessoaController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Pessoa>> search(@RequestParam(name = "t", required = true) String termo) {
+    public ResponseEntity<List<Pessoa>> search(@RequestParam("t") String termo) {
         if(termo == null || termo.isEmpty()){
             return ResponseEntity.badRequest().build();
         }
