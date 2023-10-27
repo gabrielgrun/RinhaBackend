@@ -6,10 +6,8 @@ services:
     hostname: api1
     depends_on:
       - db
-    ports:
-      - "8081:80"
     expose:
-      - "80"
+      - '8080'
     deploy:
       resources:
         limits:
@@ -17,8 +15,6 @@ services:
           memory: '0.8GB'
     networks:
       - api_network
-    environment:
-      PORT: 8081
 
   api2: # API - Instância 02
     image: rinha
@@ -26,10 +22,8 @@ services:
     hostname: api2
     depends_on:
       - db
-    ports:
-      - "8082:80"
     expose:
-      - "80"
+      - '8080'
     deploy:
       resources:
         limits:
@@ -37,8 +31,6 @@ services:
           memory: '0.8GB'
     networks:
       - api_network
-    environment:
-      PORT: 8082
 
   nginx: # Load Balancer
     container_name: nginx
@@ -49,7 +41,7 @@ services:
       - api1
       - api2
     ports:
-      - "9999:9999"
+      - '9999:9999'
     deploy:
       resources:
         limits:
@@ -62,7 +54,7 @@ services:
     container_name: db
     image: postgres
     ports:
-      - "5432:5432"
+      - '5432:5432'
     deploy:
       resources:
         limits:
