@@ -1,3 +1,5 @@
+CREATE EXTENSION pg_trgm;
+
 CREATE TABLE IF NOT EXISTS pessoa
 (
     apelido character varying(32) COLLATE pg_catalog."default" NOT NULL,
@@ -13,3 +15,5 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS pessoa
     OWNER to ggrun;
+	
+CREATE INDEX idx_termo ON pessoa USING gist(termo gist_trgm_ops);
