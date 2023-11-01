@@ -6,6 +6,7 @@ services:
     hostname: api1
     depends_on:
       - db
+      - cache
     expose:
       - '8080'
     deploy:
@@ -68,6 +69,20 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - api_network
+
+  cache:
+    container_name: cache
+    hostname: cache
+    image: redis/redis-stack-server:latest
+    ports:
+      - '6379:6379'
+    networks:
+      - api_network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: '0.2GB'
 networks:
   api_network:
     driver: bridge
