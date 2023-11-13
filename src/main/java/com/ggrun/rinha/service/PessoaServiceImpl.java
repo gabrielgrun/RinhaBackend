@@ -3,11 +3,11 @@ package com.ggrun.rinha.service;
 import com.ggrun.rinha.entity.Pessoa;
 import com.ggrun.rinha.repository.PessoaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 public class PessoaServiceImpl implements PessoaService {
@@ -15,10 +15,11 @@ public class PessoaServiceImpl implements PessoaService {
     @Autowired
     PessoaRepository repository;
 
+    private static final ConcurrentLinkedQueue<Pessoa> pessoas = new ConcurrentLinkedQueue<>();
+
     @Override
-    public UUID create(Pessoa pessoa){
-        Pessoa pessoaInserida = repository.save(pessoa);
-        return pessoaInserida.getId();
+    public void create(Pessoa pessoa){
+        pessoas.add(pessoa);
     }
 
     @Override
@@ -40,5 +41,19 @@ public class PessoaServiceImpl implements PessoaService {
     @Override
     public Integer count(){
         return repository.findAll().size();
+    }
+
+    @Scheduled(fixedDelay = 2000)
+    public void batchInsertScheduled() {
+        final Queue<Pessoa> pessoasQueue = new ConcurrentLinkedQueue<>();
+        for (int i = 0; i < pessoas.size(); i++) {
+            pessoasQueue.add(pessoas.poll());
+        }
+        batchInsert(pessoasQueue);
+    }
+
+    public void batchInsert(final Queue<Pessoa> pessoasQueue) {
+        if (pessoasQueue.isEmpty()) return;
+        repository.saveAll(pessoasQueue);
     }
 }

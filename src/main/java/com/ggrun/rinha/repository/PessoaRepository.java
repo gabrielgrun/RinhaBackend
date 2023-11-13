@@ -14,7 +14,7 @@ public interface PessoaRepository extends JpaRepository<Pessoa, UUID> {
 
     public Pessoa findByApelido(String apelido);
 
-    @Query(value = "select id, apelido, nome, nascimento, stack from pessoa where termo ilike %:termo%",
+    @Query(value = "select id, apelido, nome, nascimento, stack from pessoa where termo ilike %:termo% limit 50",
             nativeQuery = true)
     public List<Pessoa> findByTermo(@Param("termo") String termo);
 }

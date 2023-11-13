@@ -1,5 +1,6 @@
 package com.ggrun.rinha.api;
 
+import com.ggrun.rinha.cache.PessoaCache;
 import com.ggrun.rinha.entity.Pessoa;
 import com.ggrun.rinha.service.PessoaService;
 import jakarta.validation.Valid;
@@ -22,6 +23,9 @@ public class PessoaController {
     @Autowired
     PessoaService pessoaService;
 
+    @Autowired
+    PessoaCache pessoaCache;
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     protected ResponseEntity<Object> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         return ResponseEntity.unprocessableEntity().build();
@@ -34,24 +38,27 @@ public class PessoaController {
 
     @PostMapping
     public ResponseEntity<HttpStatus> create(@Valid @RequestBody Pessoa pessoa) {
-        if (!pessoa.isValid() || pessoaService.findByApelido(pessoa.getApelido()) != null) {
+        if (!pessoa.isValid() || pessoaCache.hasApelido(pessoa.getApelido())) {
             return ResponseEntity.unprocessableEntity().build();
         }
 
-        UUID id = pessoaService.create(pessoa);
+        pessoa.setId(UUID.randomUUID());
+        pessoaService.create(pessoa);
+        addCache(pessoa);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/pessoas/" + id);
+        headers.add("Location", "/pessoas/" + pessoa.getId());
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
+    }
+
+    private void addCache(Pessoa pessoa) {
+        pessoaCache.addApelido(pessoa.getApelido());
+        pessoaCache.addPessoa(pessoa);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Pessoa> get(@PathVariable("id") String id) {
         Pessoa pessoa;
-        try {
-            pessoa = pessoaService.getById(id);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        pessoa = pessoaCache.getPessoaById(id);
 
         if(pessoa == null){
             return ResponseEntity.notFound().build();
