@@ -1,3 +1,3 @@
 # Rinha de Backend 2023
 
-Projeto desenvolvido com intuito de aprender novas tecnologias ao implementar o desafio da rinha de backend 2023.
+Project developed with the aim of learning new technologies by implementing the "Rinha de Backend" challenge.
